@@ -1,9 +1,9 @@
 # Disentanglement Error
 
-**Implementation of the Disentanglement Error metric** introduced in the paper:
+Implementation of the **Disentanglement Error** metric introduced in the paper:
 
-[**"Measuring Uncertainty Disentanglement Error in Classification"** 
-by Ivo Pascal de Jong, Andreea Ioana Sburlea, Matthia Sabatelli & Matias Valdenegro-Toro](https://arxiv.org/abs/2408.12175)
+[**"Measuring Uncertainty Disentanglement Error in Classification"**](https://arxiv.org/abs/2408.12175)
+by Ivo Pascal de Jong, Andreea Ioana Sburlea, Matthia Sabatelli & Matias Valdenegro-Toro
 
 This repository provides:
 - Core Python implementation of the **Disentanglement Error** metric.
@@ -18,7 +18,7 @@ The experiments from the paper are not included in this repository. For the expe
 Install the latest version from PyPI:
 
 ```bash
-pip install disentanglement_error
+pip install disentanglement-error
 ```
 
 Or install directly from source:
