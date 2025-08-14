@@ -1,15 +1,20 @@
+from abc import abstractmethod, ABC
+
 from sklearn.metrics import accuracy_score, mean_absolute_error
 
 
-class DisentanglingModel:
+class DisentanglingModel(ABC):
 
+    @abstractmethod
     def __init__(self):
         pass
 
-    def fit(self, X_train, y_train):
+    @abstractmethod
+    def fit(self, x_train, y_train):
         pass
 
-    def predict_disentangling(self, X):
+    @abstractmethod
+    def predict_disentangling(self, x_test):
         pass
 
     def score(self, y_true, y_pred):
