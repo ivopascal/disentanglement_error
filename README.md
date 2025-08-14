@@ -41,8 +41,7 @@ We then observe the Pearson Correlation Coefficients ($Corr$) and calculate the 
 $(|Corr(u^{(a)}, U^{(a)})| + |Corr(u^{(e)}, U^{(a)})-1| + |Corr(u^{(a)}, U^{(e)})-1| + |Corr(u^{(e)}, U^{(e)})|) /4$
 
 While $U^{(a)}$ and $U^{(e)}$ cannot be observed directly, 
-when accuracy changes due to the experiments, we know that this must reflect an increase in $U^{(a)}$ or $U^{(e)}$ 
-depending on the experiment used.
+when accuracy changes due to the experiments, we know that this must reflect an increase in $U^{(a)}$ (label noise) or $U^{(e)}$ (decreasing dataset). 
 
 ## Installation
 
