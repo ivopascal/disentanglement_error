@@ -59,7 +59,10 @@ pip install -e .
 ```
 
 ## Quick start
-Here’s a minimal example of how to compute the Disentanglement Error for a model:
+Here’s a minimal example of how to compute the Disentanglement Error for a model. 
+It relies on creating an implementation for the abstract class [DisentanglingModel](disentanglement_error/disentangling_model.py):
+
+
 ```python
 from disentanglement_error.disentangling_model import DisentanglingModel
 from disentanglement_error.error_metric import calculate_disentanglement_error
@@ -117,9 +120,9 @@ disentanglement_error, _, _= calculate_disentanglement_error(X, y, MyModel(), kw
 
 Explore the Jupyter notebooks for hands-on examples:
 
-- `examples/CIFAR10_it_demo.ipynb` – Demo of Information Theoretic disentangling on the CIFAR10 dataset. 
-- `examples/tabular_it_demo.ipynb` - A demo on tabular data. This is ideal for testing because it is relatively quick to train.
-- `examples/regression_example.ipynb` - A demo on a regression dataset. The experiments generalise to regression.
+- [examples/CIFAR10_it_demo.ipynb](examples/CIFAR10_it_demo.ipynb) – Demo of Information Theoretic disentangling on the CIFAR10 dataset. 
+- [examples/tabular_it_demo.ipynb](examples/tabular_it_demo.ipynb) - A demo on tabular data. This is ideal for testing because it is relatively quick to train.
+- [examples/regression_example.ipynb](examples/regression_example.ipynb) - A demo on a regression dataset. The experiments generalise to regression.
 
 ---
 
@@ -137,7 +140,7 @@ If you use this implementation in your work, please cite the original paper:
 ---
 ## Contact
 
-If you have any questions, please contact Ivo Pascal de Jong at ivo.de.jong@rug.nl, or open an issue on Github. 
+If you have any questions, please contact Ivo Pascal de Jong at ivo.de.jong@rug.nl, or open an [issue on Github](https://github.com/ivopascal/disentanglement_error/issues). 
 
 --- 
 ### Enjoy disentangling your uncertainties!
