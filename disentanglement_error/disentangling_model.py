@@ -1,3 +1,6 @@
+from sklearn.metrics import accuracy_score, mean_absolute_error
+
+
 class DisentanglingModel:
 
     def __init__(self):
@@ -11,9 +14,10 @@ class DisentanglingModel:
 
     def score(self, y_true, y_pred):
         # Score must be positively increasing and what the uncertainty should reflect
-        # For classification this is typically accuracy
-        # For regression this is typically 1-MAE (when using std.dev as uncertainty)
-        pass
+        if self.is_regression:
+            return 1 - mean_absolute_error(y_true, y_pred)
+        else:
+            return accuracy_score(y_true, y_pred)
 
     @property
     def is_regression(self):

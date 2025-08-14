@@ -1,22 +1,22 @@
 [project]
 name = "disentanglement-error"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.1.1"
+description = "Implementation of Disentanglement Error as described in https://arxiv.org/abs/2408.12175"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "notebook>=7.4.5",
     "numpy>=1.26.4",
     "scikit-learn>=1.7.1",
-    "tensorflow==2.15",
+    "pandas>=2.3.1",
 ]
 
 [dependency-groups]
 dev = [
+    "tensorflow==2.15",
     "keras>=2.15.0",
     "keras-uncertainty",
-    "pandas>=2.3.1",
-    "tensorflow==2.15",
+    "matplotlib>=3.10.5",
 ]
 
 [tool.uv.sources]

@@ -2,14 +2,15 @@ import numpy as np
 from scipy.stats import pearsonr
 from sklearn.utils import shuffle
 
-def decreasing_dataset_error(x_train, y_train, x_test, y_test, model, config):
+from disentanglement_error.util import ExperimentResults
+
+
+def decreasing_dataset_experiment(x_train, y_train, x_test, y_test, model, config):
     dataset_sizes = config.dataset_sizes
 
     x_train, y_train = shuffle(x_train, y_train)
 
-    aleatoric_means = []
-    epistemic_means = []
-    scores = []
+    experiment_results = ExperimentResults()
     for dataset_size in dataset_sizes:
         x_train_small, y_train_small = create_subsampled_dataset(x_train, y_train, dataset_size)
         
@@ -18,15 +19,16 @@ def decreasing_dataset_error(x_train, y_train, x_test, y_test, model, config):
         predictions, aleatorics, epistemics = model.predict_disentangling(x_test)
 
         score = model.score(y_test, predictions)
-        aleatoric_means.append(np.mean(aleatorics))
-        epistemic_means.append(np.mean(epistemics))
-        scores.append(score)
+
+        experiment_results.scores.append(score)
+        experiment_results.aleatorics.append(aleatorics.mean())
+        experiment_results.epistemics.append(epistemics.mean())
 
 
-    aleatoric_pcc, _ = pearsonr(aleatoric_means, scores)
-    epistemic_pcc, _ = pearsonr(epistemic_means, scores)
+    aleatoric_pcc, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
+    epistemic_pcc, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
 
-    return np.abs(aleatoric_pcc - 0) + np.abs(epistemic_pcc - 1)
+    return np.abs(aleatoric_pcc - 0) + np.abs(epistemic_pcc - 1), experiment_results
 
 def create_subsampled_dataset(x_train, y_train, dataset_size):
     X_train_subs = []
