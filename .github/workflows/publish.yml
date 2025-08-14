@@ -1,30 +1,28 @@
-# publish.yml
-
-name: "Publish"
+name: Publish
 
 on:
-  release:
-    types: ["published"]
+  push:
+    tags:
+      # Publish on any tag starting with a `v`, e.g. v1.2.3
+      - v*
 
 jobs:
-  run:
-    name: "Build and publish release"
+  pypi:
+    name: Publish to PyPI
     runs-on: ubuntu-latest
-
+    # Environment and permissions trusted publishing.
+    environment:
+      # Create this environment in the GitHub repository under Settings -> Environments
+      name: release
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
-          cache-dependency-glob: uv.lock
-
-      - name: Set up Python
-        run: uv python install 3.12  # Or whatever version I want to use.
-
-      - name: Build
-        run: uv build
-
-      - name: Publish
-        run: uv publish -t ${{ secrets.PYPI_TOKEN }}
+      - uses: astral-sh/setup-uv@v3
+      - run: uv build
+      # Check that basic features work and we didn't miss to include crucial files
+      - name: Smoke test (wheel)
+        run: uv run --isolated --no-project -p 3.13 --with dist/*.whl tests/smoke_test.py
+      - name: Smoke test (source distribution)
+        run: uv run --isolated --no-project -p 3.13 --with dist/*.tar.gz tests/smoke_test.py
+      - run: uv publish --trusted-publishing always
