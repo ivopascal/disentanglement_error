@@ -21,7 +21,7 @@ is non-deterministic so we cannot always be correct. This is noise that is inher
 2. Epistemic uncertainty: Uncertainty related to the model's _knowledge_. The model has not perfectly learned the
 relationship between this input and the output. This is reducible with more training data.
 
-There are methods to estimate each of these uncertainties.
+There are methods to estimate each of these uncertainties, but it's not easy to know how well they work.
 
 Disentanglement Error measures whether there are erroneous interactions between the estimated aleatoric and epistemic uncertainty. 
 Based on the formulation from [Mucsanyi et al., (2025)](https://proceedings.neurips.cc/paper_files/paper/2024/hash/5afa9cb1e917b898ad418216dc726fbd-Abstract-Datasets_and_Benchmarks_Track.html):
