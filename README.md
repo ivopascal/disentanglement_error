@@ -13,6 +13,37 @@ The experiments from the paper are not included in this repository. For the expe
 
 ---
 
+## What is Disentanglement Error?
+
+When estimating uncertainty in Machine Learning we typically consider two kinds of uncertainty:
+1. Aleatoric uncertainty: Uncertainty related to noise in the data. The relationship between the input and the output 
+is non-deterministic so we cannot always be correct. This is noise that is inherent in the data.
+2. Epistemic uncertainty: Uncertainty related to the model's _knowledge_. The model has not perfectly learned the
+relationship between this input and the output. This is reducible with more training data.
+
+There are methods to estimate each of these uncertainties.
+
+Disentanglement Error measures whether there are erroneous interactions between the estimated aleatoric and epistemic uncertainty. 
+Based on the formulation from [Mucsanyi et al., (2025)](https://proceedings.neurips.cc/paper_files/paper/2024/hash/5afa9cb1e917b898ad418216dc726fbd-Abstract-Datasets_and_Benchmarks_Track.html):
+
+We have estimators for $u^{(a)}$ and $u^{(e)}$ for aleatoric and epistemic uncertainty, 
+and there is some (unknown) true aleatoric and epistemic uncertainty $U^{(a)}$ and $U^{(e)}$. 
+We consider that good disentanglement is achieved when:
+ 1. $u^{(a)}$ correlates with $U^{(a)}$
+ 2. $u^{(e)}$ correlates with $U^{(e)}$
+ 3. $u^{(a)}$ does not correlate with $U^{(e)}$
+ 4. $u^{(e)}$ does not correlate with $U^{(a)}$
+
+We manipulate $U^{(e)}$ by decreasing the size of the dataset, 
+and $U^{(a)}$ by shuffling a portion of the target outputs.
+We then observe the Pearson Correlation Coefficients ($Corr$) and calculate the Disentanglement Error as:
+
+$(|Corr(u^{(a)}, U^{(a)})| + |Corr(u^{(e)}, U^{(a)})-1| + |Corr(u^{(a)}, U^{(e)})-1| + |Corr(u^{(e)}, U^{(e)})|) /4$
+
+While $U^{(a)}$ and $U^{(e)}$ cannot be observed directly, 
+when accuracy changes due to the experiments, we know that this must reflect an increase in $U^{(a)}$ or $U^{(e)}$ 
+depending on the experiment used.
+
 ## Installation
 
 Install the latest version from PyPI:
