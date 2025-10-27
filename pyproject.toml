@@ -3,7 +3,7 @@ name = "disentanglement-error"
 version = "0.1.4"
 description = "Measure whether aleatoric and epistemic uncertainty are estimated orthogonally"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
     "notebook>=7.4.5",
     "numpy>=1.26.4",
