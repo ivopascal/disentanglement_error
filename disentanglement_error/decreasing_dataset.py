@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 import torch
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr
 from sklearn.utils import shuffle
 from torch.utils.data import DataLoader
 
@@ -29,10 +29,14 @@ def decreasing_dataset_experiment(x_train, y_train, x_test, y_test, model, confi
         experiment_results.epistemics.append(epistemics.mean())
 
 
-    aleatoric_pcc, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
-    epistemic_pcc, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
+    if config.rank_correlation:
+        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, experiment_results.scores)
+    else:
+        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
 
-    return np.abs(aleatoric_pcc - 0) + np.abs(epistemic_pcc - 1), experiment_results
+    return config.term_weights[0] * np.abs(aleatoric_correlation - 0) + config.term_weights[1] * np.abs(epistemic_correlation - 1), experiment_results
 
 def create_subsampled_dataset(x_train, y_train, dataset_size):
     X_train_subs = []
@@ -101,7 +105,12 @@ def decreasing_dataset_experiment_torch(train_dataset, val_dataset, model, confi
             experiment_results.aleatorics.append(0.5)
             experiment_results.epistemics.append(0.5)
 
-    aleatoric_pcc, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
-    epistemic_pcc, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
+    if config.rank_correlation:
+        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, experiment_results.scores)
+    else:
+        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
 
-    return np.abs(aleatoric_pcc - 0) + np.abs(epistemic_pcc - 1), experiment_results
+    return config.term_weights[0] * np.abs(aleatoric_correlation - 0) + config.term_weights[1] * np.abs(epistemic_correlation - 1), experiment_results
+

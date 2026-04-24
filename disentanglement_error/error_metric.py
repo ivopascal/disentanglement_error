@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from disentanglement_error.decreasing_dataset import decreasing_dataset_experiment, decreasing_dataset_experiment_torch
-from disentanglement_error.label_noise import label_noise_experiment
+from disentanglement_error.label_noise import label_noise_experiment, label_noise_experiment_torch
 from disentanglement_error.util import Config, RunResults, CustomJsonEncoder
 
 
@@ -26,9 +26,9 @@ def calculate_disentanglement_error(x_train, y_train, disentangling_model, x_tes
     if return_json:
         results_json = json.dumps(results, cls=CustomJsonEncoder)
         config_json = json.dumps(config, cls=CustomJsonEncoder)
-        return np.mean(disentanglement_errors), results_json, config_json
+        return np.sum(disentanglement_errors) / (1+ np.sum(config.term_weights)), results_json, config_json
     else:
-        return np.mean(disentanglement_errors)
+        return np.sum(disentanglement_errors) / (1+ np.sum(config.term_weights))
 
 
 def calculate_disentanglement_error_torch(train_dataset, val_dataset, disentangling_model, batch_size, num_workers, kw_config=None, return_json=True):
@@ -46,6 +46,6 @@ def calculate_disentanglement_error_torch(train_dataset, val_dataset, disentangl
     if return_json:
         results_json = json.dumps(results, cls=CustomJsonEncoder)
         config_json = json.dumps(config, cls=CustomJsonEncoder)
-        return np.mean(disentanglement_errors), results_json, config_json
+        return np.sum(disentanglement_errors) / (1+ np.sum(config.term_weights)), results_json, config_json, results_json, config_json
     else:
-        return np.mean(disentanglement_errors)
+        return np.sum(disentanglement_errors) / (1+ np.sum(config.term_weights))
