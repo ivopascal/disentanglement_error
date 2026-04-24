@@ -42,6 +42,8 @@ class CustomJsonEncoder(json.JSONEncoder):
 class Config:
     dataset_sizes: List[float] = field(default_factory=lambda: [0.01, 0.05, 0.10, 0.25, 0.50, 0.75, 1.0])
     label_noises: List[float] = field(default_factory=lambda: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    rank_correlation: bool = False
+    term_weights: List[float] = field(default_factory=lambda: [1.0, 1.0, 1.0]) # alpha, beta, gamma. au consistency is always weight 1
     n_runs: int = 5
 
 @dataclass

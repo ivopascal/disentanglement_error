@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 import torch
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr
 from sklearn.utils import shuffle
 
 from disentanglement_error.util import ExperimentResults, AverageMeter, Summary
@@ -25,10 +25,14 @@ def label_noise_experiment(x_train, y_train, x_test, y_test, model, config):
         experiment_results.aleatorics.append(np.mean(aleatorics))
         experiment_results.epistemics.append(np.mean(epistemics))
 
-    aleatoric_pcc, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
-    epistemic_pcc, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
+    if config.rank_correlation:
+        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, experiment_results.scores)
+    else:
+        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
 
-    return np.abs(aleatoric_pcc - 1) + np.abs(epistemic_pcc - 0), experiment_results
+    return config.term_weights[0] * np.abs(aleatoric_correlation - 0) + config.term_weights[1] * np.abs(epistemic_correlation - 1), experiment_results
 
 
 def partial_shuffle_dataset(x, y, percentage):
@@ -72,10 +76,15 @@ def label_noise_experiment_torch(train_dataset, val_dataset, model, config, batc
             experiment_results.aleatorics.append(0.5)
             experiment_results.epistemics.append(0.5)
 
-    aleatoric_pcc, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
-    epistemic_pcc, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
+    if config.rank_correlation:
+        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, experiment_results.scores)
+    else:
+        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
+        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
 
-    return np.abs(aleatoric_pcc - 1) + np.abs(epistemic_pcc - 0), experiment_results
+
+    return 1 * np.abs(aleatoric_correlation - 1) + config.term_weights[2] * np.abs(epistemic_correlation - 0), experiment_results
 
 
 def create_partial_shuffle_dataloader_torch(dataset, percentage, batch_size, workers):

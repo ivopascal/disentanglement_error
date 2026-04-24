@@ -2,7 +2,7 @@
 
 Implementation of the **Disentanglement Error** metric introduced in the paper:
 
-[**"Measuring Uncertainty Disentanglement Error in Classification"**](https://arxiv.org/abs/2408.12175)
+[**"Measuring Orthogonality as the Blind-Spot of Uncertainty Disentanglement"**](https://arxiv.org/abs/2408.12175)
 by Ivo Pascal de Jong, Andreea Ioana Sburlea, Matthia Sabatelli & Matias Valdenegro-Toro
 
 This repository provides:
@@ -36,9 +36,9 @@ We consider that good disentanglement is achieved when:
 
 We manipulate $U^{(e)}$ by decreasing the size of the dataset, 
 and $U^{(a)}$ by shuffling a portion of the target outputs.
-We then observe the Pearson Correlation Coefficients ($Corr$) and calculate the Disentanglement Error as:
+We then observe the correlation $Corr$ (either Spearman Rank Correlation or Pearson correlation) and calculate the Disentanglement Error as:
 
-$(|Corr(u^{(a)}, U^{(a)})| + |Corr(u^{(e)}, U^{(a)})-1| + |Corr(u^{(a)}, U^{(e)})-1| + |Corr(u^{(e)}, U^{(e)})|) /4$
+$(|Corr(u^{(a)}, U^{(a)})| + \alpha |Corr(u^{(e)}, U^{(a)})-1| + \beta |Corr(u^{(a)}, U^{(e)})-1| + \gamma |Corr(u^{(e)}, U^{(e)})|) /(1+\alpha+\beta+\gamma)$
 
 While $U^{(a)}$ and $U^{(e)}$ cannot be observed directly, 
 when accuracy changes due to the experiments, we know that this must reflect an increase in $U^{(a)}$ (label noise) or $U^{(e)}$ (decreasing dataset). 
@@ -105,12 +105,13 @@ From this inspection you can check whether the experiments worked properly. You 
 2. Score decreases with label noise mostly linear.
 3. These effects are much greater than noise.
 
-Based on these graphs (or computational constraints) you can modify the parameters of the experiment:
+You can modify the parameters of the experiment, to balance computational cost, support Rank-Correlation, and weigh terms differently:
 ```python
-from disentanglement_error.util import json_results_to_df
 kw_config = {    
     "dataset_sizes": [0.01, 0.05, 0.10, 0.25, 0.50, 0.75, 1.0],
     "label_noises": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    "rank_correlation": False,
+    "term_weights": [1.0, 2.0, 2.0],
     "n_runs": 5
 }
 disentanglement_error, _, _= calculate_disentanglement_error(X, y, MyModel(), kw_config=kw_config)
@@ -130,8 +131,8 @@ Explore the Jupyter notebooks for hands-on examples:
 
 If you use this implementation in your work, please cite the original paper:
 ```text
-@article{de2024disentangled,
-  title={Measuring Uncertainty Disentanglement Error in Classification},
+@article{jong2024disentangled,
+  title={Measuring Orthogonality as the Blind-Spot of Uncertainty Disentanglement},
   author={de Jong, Ivo Pascal and Sburlea, Andreea Ioana, Sabatelli, Matthia and Valdenegro-Toro, Matias},
   journal={arXiv preprint arXiv:2408.12175},
   year={2024}
