@@ -30,13 +30,13 @@ def decreasing_dataset_experiment(x_train, y_train, x_test, y_test, model, confi
 
 
     if config.rank_correlation:
-        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, experiment_results.scores)
-        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, experiment_results.scores)
+        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, -np.array(experiment_results.scores)) #p_s(u_a, U_e)
+        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, -np.array(experiment_results.scores)) #p_s(u_a, U_e)
     else:
-        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
-        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
+        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, -np.array(experiment_results.scores)) #\rho(u_a, U_e)
+        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, -np.array(experiment_results.scores)) #\rho(u_e, U_e)
 
-    return config.term_weights[0] * np.abs(aleatoric_correlation - 0) + config.term_weights[1] * np.abs(epistemic_correlation - 1), experiment_results
+    return (aleatoric_correlation, epistemic_correlation), experiment_results
 
 def create_subsampled_dataset(x_train, y_train, dataset_size):
     X_train_subs = []
@@ -106,11 +106,10 @@ def decreasing_dataset_experiment_torch(train_dataset, val_dataset, model, confi
             experiment_results.epistemics.append(0.5)
 
     if config.rank_correlation:
-        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, experiment_results.scores)
-        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, experiment_results.scores)
+        aleatoric_correlation, _ = spearmanr(experiment_results.aleatorics, -np.array(experiment_results.scores)) #p_s(u_a, U_e)
+        epistemic_correlation, _ = spearmanr(experiment_results.epistemics, -np.array(experiment_results.scores)) #p_s(u_a, U_e)
     else:
-        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, experiment_results.scores)
-        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, experiment_results.scores)
+        aleatoric_correlation, _ = pearsonr(experiment_results.aleatorics, -np.array(experiment_results.scores)) #\rho(u_a, U_e)
+        epistemic_correlation, _ = pearsonr(experiment_results.epistemics, -np.array(experiment_results.scores)) #\rho(u_e, U_e)
 
-    return config.term_weights[0] * np.abs(aleatoric_correlation - 0) + config.term_weights[1] * np.abs(epistemic_correlation - 1), experiment_results
-
+    return (aleatoric_correlation, epistemic_correlation), experiment_results
