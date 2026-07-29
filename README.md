@@ -6,7 +6,7 @@ Implementation of the **Disentanglement Error** metric introduced in the paper:
 by Ivo Pascal de Jong, Andreea Ioana Sburlea, Matthia Sabatelli & Matias Valdenegro-Toro
 
 This repository provides:
-- Core Python implementation of the **Disentanglement Error** metric.
+- Core Python implementation of the **Uncertainty Disentanglement Error** metric.
 - Example usage and experiments via Jupyter notebooks.
 
 The experiments from the paper are not included in this repository. For the experiments please refer to [github.com/ivopascal/uq_disentanglement_comparison](https://github.com/ivopascal/uq_disentanglement_comparison)
@@ -88,7 +88,7 @@ class MyModel(DisentanglingModel):
         return predictions, aleatoric_uncertainties, epistemic_uncertainties
 
 X, y = collect_my_dataset()
-disentanglement_error = calculate_disentanglement_error(X, y, MyModel(), return_json=False)
+disentanglement_error, correlations = calculate_disentanglement_error(X, y, MyModel(), return_json=False)
 ```
 ---
 ## Inspection and Parameter setting
@@ -96,7 +96,7 @@ To gain further insights into the experiment, you can return `json` results
 which can be transformed into a Pandas DataFrame for easy handling. 
 ```python
 from disentanglement_error.util import json_results_to_df
-disentanglement_error, result_json, config_json = calculate_disentanglement_error(X, y, MyModel(), return_json=True)
+disentanglement_error, correlations, result_json, config_json = calculate_disentanglement_error(X, y, MyModel(), return_json=True)
 df = json_results_to_df(result_json, config_json)
 df.drop("Run_Index", axis=1).groupby(["Experiment", "Percentage"]).mean().groupby(['Experiment']).plot() # Simple plotting
 ```
@@ -115,7 +115,7 @@ kw_config = {
     "term_weights": [1.0, 2.0, 2.0],
     "n_runs": 5
 }
-disentanglement_error, _, _= calculate_disentanglement_error(X, y, MyModel(), kw_config=kw_config)
+disentanglement_error, _, _, _= calculate_disentanglement_error(X, y, MyModel(), kw_config=kw_config)
 ```
 ---
 ## Examples

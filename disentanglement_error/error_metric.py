@@ -38,17 +38,18 @@ def calculate_disentanglement_error(x_train, y_train, disentangling_model, x_tes
             config.term_weights[1] * np.abs(ua_Ue_corrs).mean() +
             config.term_weights[2] * np.abs(ue_Ua_corrs).mean()
     )
-
-    if return_json:
-        results_json = json.dumps(results, cls=CustomJsonEncoder)
-        config_json = json.dumps(config, cls=CustomJsonEncoder)
-        return disentanglement_error, results_json, config_json
-    else:
-        return disentanglement_error, {"ua_Ua_corr": ua_Ua_corrs.mean(),
+    correlations = {"ua_Ua_corr": ua_Ua_corrs.mean(),
                                        "ue_Ue_corr": ue_Ue_corrs.mean(),
                                        "ua_Ue_corr": ua_Ue_corrs.mean(),
                                        "ue_Ua_corr": ue_Ua_corrs.mean(),
                                        }
+
+    if return_json:
+        results_json = json.dumps(results, cls=CustomJsonEncoder)
+        config_json = json.dumps(config, cls=CustomJsonEncoder)
+        return disentanglement_error, correlations, results_json, config_json
+    else:
+        return disentanglement_error, correlations
 
 
 def calculate_disentanglement_error_torch(train_dataset, val_dataset, disentangling_model, batch_size, num_workers, kw_config=None, return_json=True):
@@ -79,10 +80,15 @@ def calculate_disentanglement_error_torch(train_dataset, val_dataset, disentangl
             config.term_weights[1] * np.abs(ua_Ue_corrs).mean() +
             config.term_weights[2] * np.abs(ue_Ua_corrs).mean()
     )
+    correlations = {"ua_Ua_corr": ua_Ua_corrs.mean(),
+        "ue_Ue_corr": ue_Ue_corrs.mean(),
+        "ua_Ue_corr": ua_Ue_corrs.mean(),
+        "ue_Ua_corr": ue_Ua_corrs.mean(),
+    }
 
     if return_json:
         results_json = json.dumps(results, cls=CustomJsonEncoder)
         config_json = json.dumps(config, cls=CustomJsonEncoder)
-        return disentanglement_error, results_json, config_json
+        return disentanglement_error, correlations, results_json, config_json
     else:
-        return disentanglement_error
+        return disentanglement_error, correlations
