@@ -6,7 +6,7 @@ Implementation of the **Disentanglement Error** metric introduced in the paper:
 by Ivo Pascal de Jong, Andreea Ioana Sburlea, Matthia Sabatelli & Matias Valdenegro-Toro
 
 This repository provides:
-- Core Python implementation of the **Disentanglement Error** metric.
+- Core Python implementation of the **Uncertainty Disentanglement Error** metric.
 - Example usage and experiments via Jupyter notebooks.
 
 The experiments from the paper are not included in this repository. For the experiments please refer to [github.com/ivopascal/uq_disentanglement_comparison](https://github.com/ivopascal/uq_disentanglement_comparison)
@@ -26,22 +26,23 @@ There are methods to estimate each of these uncertainties, but it's not easy to 
 Disentanglement Error measures whether there are erroneous interactions between the estimated aleatoric and epistemic uncertainty. 
 Based on the formulation from [Mucsanyi et al., (2025)](https://proceedings.neurips.cc/paper_files/paper/2024/hash/5afa9cb1e917b898ad418216dc726fbd-Abstract-Datasets_and_Benchmarks_Track.html):
 
-We have estimators for $u^{(a)}$ and $u^{(e)}$ for aleatoric and epistemic uncertainty, 
-and there is some (unknown) true aleatoric and epistemic uncertainty $U^{(a)}$ and $U^{(e)}$. 
-We consider that good disentanglement is achieved when:
- 1. $u^{(a)}$ correlates with $U^{(a)}$
- 2. $u^{(e)}$ correlates with $U^{(e)}$
- 3. $u^{(a)}$ does not correlate with $U^{(e)}$
- 4. $u^{(e)}$ does not correlate with $U^{(a)}$
+We have estimators for $u_a$ and $u_e$ for aleatoric and epistemic uncertainty, 
+and there is some (unknown) true aleatoric and epistemic uncertainty $U_a$ and $U_e$. 
+We consider that disentanglement is achieved when:
+ 1. $\varrho(u_a, U_a) > 0$
+ 2. $\varrho(u_e, U_e) > 0$
+ 3. $\varrho(u_a, U_e) = 0 | \varrho(U_a, U_e) = 0$
+ 4. $\varrho(u_e, U_a) = 0 | \varrho(U_a, U_e) = 0$
 
-We manipulate $U^{(e)}$ by decreasing the size of the dataset, 
-and $U^{(a)}$ by shuffling a portion of the target outputs.
-We then observe the correlation $Corr$ (either Spearman Rank Correlation or Pearson correlation) and calculate the Disentanglement Error as:
+Where $\varrho$ is a correlation measure, either Spearman Rank Correlation or Pearson correlation.
+A change in $U_e$ is measured by a decrease in accuracy due to smaller dataset size.
+A change in $U_a$ is measured by a decrease in accuracy due to label noise.
 
-$(|Corr(u^{(a)}, U^{(a)})| + \alpha |Corr(u^{(e)}, U^{(a)})-1| + \beta |Corr(u^{(a)}, U^{(e)})-1| + \gamma |Corr(u^{(e)}, U^{(e)})|) /(1+\alpha+\beta+\gamma)$
+We then define the Uncertainty Disentanglement Error as:
 
-While $U^{(a)}$ and $U^{(e)}$ cannot be observed directly, 
-when accuracy changes due to the experiments, we know that this must reflect an increase in $U^{(a)}$ (label noise) or $U^{(e)}$ (decreasing dataset). 
+$\text{UDE} = \frac{1}{1 + \alpha + \beta + \gamma} (|\varrho(u_a, U_a) -1| + \alpha |\varrho(u_e, U_e) -1| + \beta |\varrho(u_a, U_e)| + \gamma |\varrho(u_e, U_a)|$
+
+UDE measures performance on all four conditions testing orthogonality and consistency, though it is recommended that each term is also looked at individually.
 
 ## Installation
 
@@ -87,7 +88,7 @@ class MyModel(DisentanglingModel):
         return predictions, aleatoric_uncertainties, epistemic_uncertainties
 
 X, y = collect_my_dataset()
-disentanglement_error = calculate_disentanglement_error(X, y, MyModel(), return_json=False)
+disentanglement_error, correlations = calculate_disentanglement_error(X, y, MyModel(), return_json=False)
 ```
 ---
 ## Inspection and Parameter setting
@@ -95,7 +96,7 @@ To gain further insights into the experiment, you can return `json` results
 which can be transformed into a Pandas DataFrame for easy handling. 
 ```python
 from disentanglement_error.util import json_results_to_df
-disentanglement_error, result_json, config_json = calculate_disentanglement_error(X, y, MyModel(), return_json=True)
+disentanglement_error, correlations, result_json, config_json = calculate_disentanglement_error(X, y, MyModel(), return_json=True)
 df = json_results_to_df(result_json, config_json)
 df.drop("Run_Index", axis=1).groupby(["Experiment", "Percentage"]).mean().groupby(['Experiment']).plot() # Simple plotting
 ```
@@ -114,7 +115,7 @@ kw_config = {
     "term_weights": [1.0, 2.0, 2.0],
     "n_runs": 5
 }
-disentanglement_error, _, _= calculate_disentanglement_error(X, y, MyModel(), kw_config=kw_config)
+disentanglement_error, _, _, _= calculate_disentanglement_error(X, y, MyModel(), kw_config=kw_config)
 ```
 ---
 ## Examples
